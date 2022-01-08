@@ -11,6 +11,13 @@ class TelemetryErrorHolderAdapter implements Telemetry {
     private final Telemetry real;
     private final Throwable error;
 
+    /**
+     * Constructs new telemetry instance with given error.
+     *
+     * @param telemetry Original telemetry.
+     * @param error     Given error.
+     * @return Telemetry with adjusted error information.
+     */
     static Telemetry of(Telemetry telemetry, Throwable error) {
         return new TelemetryErrorHolderAdapter(
                 telemetry instanceof TelemetryErrorHolderAdapter
