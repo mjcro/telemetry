@@ -12,30 +12,49 @@ class TelemetryMetadataAdapter implements Telemetry {
     private final Telemetry real;
     private final Map<String, Object> metadata;
 
-    static Telemetry of(Telemetry real, Map<String, Object> metadata) {
+    /**
+     * Constructs new telemetry with metadata replaced.
+     *
+     * @param original Original telemetry.
+     * @param metadata Given metadata.
+     * @return New telemetry with metadata adjusted.
+     */
+    static Telemetry of(Telemetry original, Map<String, Object> metadata) {
         if (metadata == null || metadata.isEmpty()) {
-            return real;
+            return original;
         }
-        return real instanceof TelemetryMetadataAdapter
-                ? new TelemetryMetadataAdapter(((TelemetryMetadataAdapter) real).real, metadata)
-                : new TelemetryMetadataAdapter(real, metadata);
+        return original instanceof TelemetryMetadataAdapter
+                ? new TelemetryMetadataAdapter(((TelemetryMetadataAdapter) original).real, metadata)
+                : new TelemetryMetadataAdapter(original, metadata);
     }
 
-    static Telemetry append(Telemetry real, Map<String, Object> metadata) {
+    /**
+     * Constructs new telemetry with metadata appended.
+     *
+     * @param original Original telemetry.
+     * @param metadata Given metadata.
+     * @return New telemetry with metadata adjusted.
+     */
+    static Telemetry append(Telemetry original, Map<String, Object> metadata) {
         if (metadata == null || metadata.isEmpty()) {
-            return real;
+            return original;
         }
 
         // Combining
-        HashMap<String, Object> resulting = new HashMap<>(real.getMetadata());
+        HashMap<String, Object> resulting = new HashMap<>(original.getMetadata());
         resulting.putAll(metadata);
 
-        return of(real, resulting);
+        return of(original, resulting);
     }
 
     private TelemetryMetadataAdapter(Telemetry real, Map<String, Object> metadata) {
         this.real = real;
         this.metadata = Collections.unmodifiableMap(metadata);
+    }
+
+    @Override
+    public Map<String, Object> getMetadata() {
+        return metadata;
     }
 
     @Override
@@ -56,11 +75,6 @@ class TelemetryMetadataAdapter implements Telemetry {
     @Override
     public Optional<Throwable> getError() {
         return real.getError();
-    }
-
-    @Override
-    public Map<String, Object> getMetadata() {
-        return metadata;
     }
 
     @Override
